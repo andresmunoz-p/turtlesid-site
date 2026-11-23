@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turtles iD · Diapositivas</title>
+<meta name="description" content="Presentación del proyecto de maestría Turtles iD: fotoidentificación de tortugas marinas, sin conexión.">
+<link rel="icon" href="../img/icon.svg" type="image/svg+xml">
+<style>
+  :root {
+    --bg: #e9f1ef; --surface: #ffffff; --text: #12302c; --muted: #4d6b66;
+    --brand: #0f7f71; --brand-strong: #005a50; --accent: #f7edd6; --line: #d6e6e3;
+  }
+  * { box-sizing: border-box; }
+  html { color-scheme: light; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Inter, Roboto, sans-serif; }
+  a { color: var(--brand); }
+
+  .bar { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; padding: 10px 16px; background: rgba(233,241,239,.92); backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line); font-size: 15px; }
+  .bar a { text-decoration: none; font-weight: 600; }
+  .deck { display: flex; flex-direction: column; align-items: center; gap: 24px; padding: 24px 16px 48px; }
+
+  /* Each slide is 16:9; every size is in cqw so it scales with the slide width. */
+  .slide { container-type: inline-size; width: min(100%, 1280px); aspect-ratio: 16 / 9; position: relative;
+    background: var(--surface); border-radius: 14px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,60,50,.12); }
+  .in { position: absolute; inset: 0; padding: 5.5cqw 6.5cqw; display: flex; flex-direction: column; }
+  .slide h2 { font-size: 3.6cqw; line-height: 1.1; margin: 0 0 3cqw; letter-spacing: -0.02em; }
+  .kicker { font-size: 1.3cqw; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--brand); margin-bottom: 1cqw; }
+  .slide p, .slide li { font-size: 1.9cqw; line-height: 1.45; margin: 0; }
+  .muted { color: var(--muted); }
+  .num { position: absolute; right: 2.2cqw; bottom: 1.6cqw; font-size: 1.1cqw; color: var(--muted); }
+  .brandmark { position: absolute; left: 6.5cqw; bottom: 1.6cqw; font-size: 1.1cqw; color: var(--muted);
+    display: flex; align-items: center; gap: .6cqw; }
+  .brandmark img { width: 1.6cqw; height: 1.6cqw; border-radius: .4cqw; }
+
+  /* Cover */
+  .cover { background: linear-gradient(135deg, #17a390, #005a50); color: #fff; }
+  .cover .in { justify-content: center; }
+  .cover img.logo { width: 9cqw; height: 9cqw; border-radius: 2cqw; margin-bottom: 3cqw;
+    box-shadow: 0 1cqw 3cqw rgba(0,0,0,.25); }
+  .cover h1 { font-size: 6.4cqw; margin: 0 0 1.2cqw; letter-spacing: -0.03em; line-height: 1; }
+  .cover .sub { font-size: 2.8cqw; font-weight: 600; margin-bottom: 3cqw; color: var(--accent); }
+  .cover p { font-size: 1.8cqw; opacity: .9; max-width: 60cqw; }
+  .cover .badge { display: inline-block; align-self: flex-start; font-size: 1.3cqw; font-weight: 700;
+    background: rgba(255,255,255,.16); padding: .5cqw 1.4cqw; border-radius: 99cqw; margin-bottom: 2.4cqw; }
+
+  .cols { display: grid; gap: 2.4cqw; flex: 1; align-content: start; }
+  .c2 { grid-template-columns: 1fr 1fr; } .c3 { grid-template-columns: repeat(3, 1fr); }
+  .c5 { grid-template-columns: repeat(5, 1fr); gap: 1.4cqw; }
+  .card { background: #f6faf9; border: 1px solid var(--line); border-radius: 1.4cqw; padding: 2.2cqw; }
+  .card h3 { font-size: 2.1cqw; margin: 0 0 1cqw; color: var(--brand-strong); }
+  .card p { font-size: 1.7cqw; color: var(--muted); }
+  .step { counter-increment: s; }
+  .steps { counter-reset: s; }
+  .step::before { content: counter(s); display: block; font-size: 3.2cqw; font-weight: 800; color: var(--brand); margin-bottom: .8cqw; }
+  .step h3 { font-size: 1.8cqw; }
+  .step p { font-size: 1.5cqw; }
+
+  .big { font-size: 2.6cqw !important; line-height: 1.35 !important; font-weight: 600; max-width: 80cqw; }
+  .callout { margin-top: auto; background: var(--accent); border-radius: 1.4cqw; padding: 1.8cqw 2.4cqw; }
+  .callout p { font-size: 1.7cqw; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 2cqw; }
+  th, td { padding: 1.3cqw 1.6cqw; text-align: left; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 1.6cqw; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.zero td { font-weight: 700; color: var(--brand-strong); }
+
+  .shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3cqw; flex: 1; min-height: 0; }
+  .shots figure { margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 0; }
+  .shots img { height: 30cqw; width: auto; border-radius: 1.8cqw; border: .45cqw solid #10201d; }
+  .shots figcaption { font-size: 1.45cqw; color: var(--muted); margin-top: 1cqw; text-align: center; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: .8cqw; }
+  .chips span { background: #f6faf9; border: 1px solid var(--line); border-radius: 99cqw; padding: .6cqw 1.4cqw; font-size: 1.5cqw; }
+  .stackrow h3 { font-size: 1.6cqw; margin: 0 0 1cqw; color: var(--muted); font-weight: 600; }
+
+  ul.plain { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.4cqw; }
+  ul.plain li p::before { content: "→ "; color: var(--brand); font-weight: 700; }
+
+  .links p { font-size: 1.8cqw; margin-bottom: 1.6cqw; }
+  .links a { font-weight: 600; word-break: break-all; }
+
+  @media (max-width: 600px) { .bar .hide-sm { display: none; } }
+
+  @page { size: 1280px 720px; margin: 0; }
+  @media print {
+    body { background: #fff; }
+    .bar { display: none; }
+    .deck { padding: 0; gap: 0; display: block; }
+    .slide { width: 1280px; height: 720px; border-radius: 0; box-shadow: none; break-after: page; }
+    .slide:last-child { break-after: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <a href="../">← Turtles iD</a>
+  <span><span class="hide-sm muted">11 diapositivas · </span><a href="turtles-id-diapositivas.pdf" download>Descargar PDF</a></span>
+</div>
+
+<main class="deck">
+
+  <!-- 1 -->
+  <section class="slide cover" aria-label="Portada">
+    <div class="in">
+      <img class="logo" src="../img/icon.svg" alt="">
+      <span class="badge">Proyecto de maestría · Islas Galápagos</span>
+      <h1>Turtles iD</h1>
+      <div class="sub">Reconocer a cada tortuga marina por su rostro</div>
+      <p>Fotoidentificación de tortugas marinas individuales, sin conexión a internet, en el teléfono durante el trabajo de campo o en la laptop de la estación.</p>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide" aria-label="El problema">
+    <div class="in">
+      <div class="kicker">El problema</div>
+      <h2>Seguir a cada tortuga durante décadas</h2>
+      <div class="cols c2">
+        <div class="card"><h3>Marcas invasivas</h3><p>Las marcas físicas molestan al animal y se pierden con los años, lo que rompe el historial de cada individuo.</p></div>
+        <div class="card"><h3>Comparar fotos a ojo</h3><p>Sin marcas, el investigador compara fotos manualmente. Cada vez toma más horas a medida que crece el catálogo.</p></div>
+      </div>
+      <div class="callout"><p><strong>Se necesita</strong> una forma no invasiva, rápida y que funcione en el campo, donde no hay internet.</p></div>
+    </div>
+    <div class="brandmark"><img src="../img/icon.svg" alt="">Turtles iD</div><div class="num">2</div>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide" aria-label="La idea">
+    <div class="in">
+      <div class="kicker">La idea</div>
+      <h2>El rostro de una tortuga es su huella digital</h2>
+      <p class="big">Las escamas de la cabeza forman un patrón único que no cambia en toda la vida del animal.</p>
+      <div class="cols c3" style="margin-top:4cqw">
+        <div class="card"><h3>Basta una foto</h3><p>Sin capturar ni tocar al animal.</p></div>
+        <div class="card"><h3>Sin conexión</h3><p>Todo el reconocimiento ocurre en el dispositivo.</p></div>
+        <div class="card"><h3>El investigador decide</h3><p>La app sugiere; nunca decide sola.</p></div>
+      </div>
+    </div>
+    <div class="brandmark"><img src="../img/icon.svg" alt="">Turtles iD</div><div class="num">3</div>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide" aria-label="Cómo funciona">
+    <div class="in">
+      <div class="kicker">Cómo funciona</div>
+      <h2>De la foto a una sugerencia, en segundos</h2>
+      <div class="cols c5 steps">
+        <div class="card step"><h3>Captura guiada</h3><p>Revisa nitidez, luz y movimiento, y dispara sola.</p></div>
+        <div class="card step"><h3>Detección</h3><p>Un modelo localiza la cabeza, la recorta y distingue izquierda y derecha.</p></div>
+        <div class="card step"><h3>Especie</h3><p>Se sugiere la especie; el investigador puede elegirla.</p></div>
+        <div class="card step"><h3>Huella</h3><p>Una “huella” de 512 números se compara con cada foto del catálogo de ese lado.</p></div>
+        <div class="card step"><h3>Decisión</h3><p>“Muy probable”, “posible” o “sin coincidencia segura”: decide el investigador.</p></div>
+      </div>
+    </div>
+    <div class="brandmark"><img src="../img/icon.svg" alt="">Turtles iD</div><div class="num">4</div>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide" aria-label="Resultados">
+    <div class="in">
+      <div class="kicker">Resultados</div>
+      <h2>Con 90 fotos más recientes (modelo ronda 7)</h2>
+      <table>
+        <thead><tr><th></th><th class="n">Caguama</th><th class="n">Verde</th><th class="n">Carey</th></tr></thead>
+        <tbody>
+          <tr><td>Tortuga correcta en primer lugar</td><td class="n">70 %</td><td class="n">60 %</td><td class="n">80 %</td></tr>
+          <tr><td>Tortuga correcta entre las 5 primeras</td><td class="n">80 %</td><td class="n">92 %</td><td class="n">93 %</td></tr>
+          <tr class="zero"><td>“Muy probable” equivocado</td><td class="n">0</td><td class="n">0</td><td class="n">0</td></tr>
+        </tbody>
+      </table>
+      <div class="callout"><p>Cuando la app dice <strong>“muy probable”</strong>, no se equivocó ni una vez. Cuando duda, lo dice y deja la decisión al investigador.</p></div>
+    </div>
+    <div class="brandmark"><img src="../img/icon.svg" alt="">Turtles iD</div><div class="num">5</div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide" aria-label="Una prueba exigente">
+    <div class="in">
+      <div class="kicker">Cómo se evaluó</div>
+      <h2>Una prueba pensada para Galápagos</h2>
+      <ul class="plain">
+        <li><p><strong>Fotos posteriores al catálogo.</strong> Cada foto de prueba se tomó después que las del catálogo, como en el uso real año tras año.</p></li>
+        <li><p><strong>Un sitio nunca visto.</strong> Las tortugas verdes y carey son de Reunión, un sitio con el que el modelo nunca entrenó, como ocurrirá en Galápagos.</p></li>
+        <li><p><strong>Tres especies.</strong> Caguama, verde y carey, cada una con su propio catálogo.</p></li>
+        <li><p><strong>Prioridad a no equivocarse.</strong> Se mide el error del “muy probable”, no solo el acierto.</p></li>
+      </ul>
+    </div>
+    <div class="brandmark"><img src="../img/icon.svg" alt="">Turtles iD</div><div class="num">6</div>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide" aria-label="La app">
+    <div class="in">
+      <div class="kicker">La app</div>
+      <h2>Pensada para el trabajo de campo</h2>
+      <div class="shots">
+        <figure><img src="../img/identify-result.jpg" alt="Resultado de identificación"><figcaption>Una respuesta clara, con la especie</figcaption></figure>
+        <figure><img src="../img/candidates.jpg" alt="Tortugas candidatas"><figcaption>Las más parecidas, para comparar y confirmar</figcaption></figure>
+        <figure><img src="../img/catalog.jpg" alt="Catálogo"><figcaption>El catálogo, por especie</figcaption></figure>
+      </div>
+    </div>
+    <div class="brandmark"><img src="../img/icon.svg" alt="">Turtles iD</div><div class="num">7</div>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide" aria-label="Tecnologías">
+    <div class="in">
+      <div class="kicker">Tecnologías</div>
+      <h2>Un solo código, cinco plataformas</h2>
+      <div class="cols" style="gap:2.6cqw">
+        <div class="stackrow"><h3>App (iPhone, Android, Mac, Windows, Linux)</h3>
+          <div class="chips"><span>Flutter / Dart</span><span>Clean Architecture</span><span>SQLite</span><span>ONNX Runtime</span></div></div>
+        <div class="stackrow"><h3>Modelos</h3>
+          <div class="chips"><span>PyTorch</span><span>ConvNeXt + ArcFace</span><span>MobileNetV3</span><span>EfficientNet</span></div></div>
+        <div class="stackrow"><h3>Servidor e infraestructura</h3>
+          <div class="chips"><span>FastAPI</span><span>PostgreSQL + pgvector</span><span>Docker + Caddy</span><span>GitHub Actions</span></div></div>
+      </div>
+      <div class="callout"><p><strong>210 pruebas automatizadas.</strong> Código fuente disponible para evaluadores bajo solicitud.</p></div>
+    </div>
+    <div class="brandmark"><img src="../img/icon.svg" alt="">Turtles iD</div><div class="num">8</div>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide" aria-label="Pruébalo">
+    <div class="in">
+      <div class="kicker">Pruébalo</div>
+      <h2>La app real, en el navegador</h2>
+      <p class="big" style="margin-bottom:3cqw">La demo es la app real de iOS con 80 tortugas ya en el catálogo.</p>
+      <div class="cols c3">
+        <div class="card step"><h3>From gallery</h3><p>Elige una foto de muestra.</p></div>
+        <div class="card step"><h3>Especie</h3><p>Selecciona la especie de la foto.</p></div>
+        <div class="card step"><h3>Identify</h3><p>Revisa las tortugas sugeridas.</p></div>
+      </div>
+      <div class="callout"><p>Las sesiones duran hasta 3 minutos. Enlace en la última diapositiva.</p></div>
+    </div>
+    <div class="brandmark"><img src="../img/icon.svg" alt="">Turtles iD</div><div class="num">9</div>
+  </section>
+
+  <!-- 10 -->
+  <section class="slide" aria-label="Enlaces">
+    <div class="in links">
+      <div class="kicker">Enlaces</div>
+      <h2>Para revisar el proyecto</h2>
+      <p>Sitio del proyecto<br><a href="https://andresmunoz-p.github.io/turtlesid-site/">andresmunoz-p.github.io/turtlesid-site</a></p>
+      <p>Demo en el navegador<br><a href="https://appetize.io/app/b_bqczxibgs7rxjvvsjzryeprfvi">appetize.io/app/b_bqczxibgs7rxjvvsjzryeprfvi</a></p>
+      <p>Video de presentación<br><a href="https://www.youtube.com/watch?v=vCOHBEfMl3Q">youtube.com/watch?v=vCOHBEfMl3Q</a></p>
+    </div>
+    <div class="brandmark"><img src="../img/icon.svg" alt="">Turtles iD</div><div class="num">10</div>
+  </section>
+
+  <!-- 11 -->
+  <section class="slide cover" aria-label="Gracias">
+    <div class="in">
+      <img class="logo" src="../img/icon.svg" alt="">
+      <h1>Gracias</h1>
+      <div class="sub">Turtles iD</div>
+      <p style="font-size:1.4cqw">Datos de entrenamiento: SeaTurtleID2022, Zindi Turtle Recall, ReunionTurtles y otros, para investigación no comercial.</p>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>
